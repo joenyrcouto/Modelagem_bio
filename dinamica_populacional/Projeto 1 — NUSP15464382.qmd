@@ -1,0 +1,405 @@
+---
+lang: pt
+bibliography: bib.bib
+csl: abnt-num.csl
+link-citations: true
+nocite: |
+  @*
+filters:
+    - code-appendix
+crossref:
+  fig-title: Figura
+  tbl-title: Tabela
+  fig-prefix: Fig.
+  eq-prefix: Eq.
+code-appendix-title: 'Apêndice: Códigos Fontes em Linguagem Julia'
+code-appendix-header-level: 1
+format:
+  html:
+    toc: false
+    code-fold: true
+  pdf:
+    toc: false
+    number-sections: true
+    keep-tex: false
+    echo: true
+    pdf-engine: pdflatex
+    pdf-engine-opts: 
+      - "-shell-escape"
+    papersize: a4
+    fig-dpi: 300
+    classoption: [12pt, a4paper]
+    geometry:
+      - a4paper
+      - top=3cm
+      - left=3cm
+      - right=2cm
+      - bottom=2cm
+    fig-format: pdf
+    include-in-header:
+      text: |
+        \usepackage{newunicodechar}
+        \newunicodechar{↩}{\ensuremath{\hookleftarrow}}
+        \newunicodechar{︎}{}
+        \usepackage[utf8]{inputenc}
+        \usepackage{indentfirst}
+        \usepackage{fancyhdr}
+        
+        \pagestyle{fancy}
+        \fancyhf{} 
+        \fancyhead[R]{\thepage}
+        \renewcommand{\headrulewidth}{0pt}
+ 
+        \fancypagestyle{plain}{
+          \fancyhf{}
+          \fancyhead[R]{\thepage}
+          \renewcommand{\headrulewidth}{0pt}
+        }
+
+        \renewcommand{\sectionmark}[1]{}
+        \renewcommand{\subsectionmark}[1]{}
+        
+        \AtBeginDocument{\renewcommand{\maketitle}{}}
+        \setlength{\parindent}{1.2em}
+        \setlength{\parskip}{0pt}
+engine: jupyter
+---
+
+\begin{titlepage}
+    \begin{center}
+        % Bloco Superior com logo
+        \includegraphics[height=2.6cm]{ifsc.jpg}\hspace{0.3cm} \\
+        \large \textbf{INSTITUTO DE FÍSICA DE SÃO CARLOS} \\
+        \large \textbf{UNIVERSIDADE DE SÃO PAULO} \\
+        
+        % Primeira "mola" vertical: centraliza o título na página
+        \vfill 
+        
+        % Bloco Central: Disciplina e Título
+        \large \textbf{INTRODUÇÃO À MODELAGEM MATEMÁTICA EM BIOLOGIA} \\
+        \vspace{0.5cm}
+        {\Large Demografia brasileira — projeto 1} \\
+        
+        % Segunda "mola" vertical: empurra o bloco de identificação para baixo
+        \vfill 
+    \end{center}
+
+    % Bloco de Identificação: Alinhado à direita no rodapé da página
+    \begin{flushright}
+        \large
+        Nome: Joenyr P. C. Domingues \\
+        NUSP: 15464382 \\
+    \end{flushright}
+
+    % Espaço fixo para separação do bloco inferior
+    \vspace{4cm}
+
+    \begin{center}
+        % Bloco Inferior: Cidade e Data (Negrito)
+        \large São Carlos \\
+        \large 22/03/2026
+    \end{center}
+\end{titlepage}
+
+\newpage
+\tableofcontents 
+\newpage
+
+# Introdução {.unnumbered}
+
+A modelagem matemática de populações biológicas tem como objetivo central descrever, por meio de equações, como o tamanho de uma população se altera ao longo do tempo, permitindo testar hipóteses sobre os mecanismos que governam seu crescimento ou declínio. Conforme discutido por Allman & Rhodes (2004, Cap. 1), a formulação mais simples parte da ideia de que a variação populacional em um intervalo de tempo é proporcional ao tamanho atual da população, levando ao chamado modelo Malthusiano. Neste modelo, representado pela equação de diferenças
+
+\begin{equation}
+\label{eq-malthus}
+P_{t+1} = \lambda P_t
+\end{equation}
+
+\noindent a população no instante $t+1$ é obtida multiplicando-se a população anterior $P_t$ por um fator de crescimento finito $\lambda = 1 + r$, onde $r$ é a taxa de crescimento intrínseca. Esta formulação resulta em um crescimento exponencial, sendo uma aproximação inicial razoável para intervalos curtos de tempo, mas cujas limitações se tornam evidentes ao considerar que, em um ambiente com recursos finitos, a população não pode crescer indefinidamente.
+
+A necessidade de incorporar os efeitos da limitação de recursos levou ao desenvolvimento de modelos não lineares, onde a taxa de crescimento por indivíduo passa a depender da densidade populacional. Allman & Rhodes (2004, Cap. 1, Seç. 1.2) introduzem o modelo logístico discreto como uma alternativa mais realista, cuja forma geral pode ser expressa como
+
+\begin{equation}
+\label{eq-logistico-discreto}
+P_{t+1} = P_t + r P_t \left(1 - \frac{P_t}{K}\right)
+\end{equation}
+
+\noindent em que $K$ representa a capacidade de carga do ambiente, ou seja, o número máximo de indivíduos que pode ser sustentado a longo prazo. Expandindo a expressão, obtém-se $P_{t+1} = (1+r)P_t - \frac{r}{K}P_t^2$, onde o termo quadrático $-\frac{r}{K}P_t^2$ é responsável pela redução do crescimento em altas densidades populacionais, capturando a ideia de que o crescimento se reduz à medida que a população se aproxima do limite ambiental. No entanto, como apontam os autores (Allman & Rhodes, 2004, p. 33), uma limitação deste modelo é que, para valores muito grandes de $P_t$, a equação pode produzir valores negativos no passo seguinte — um artefato matemático que, embora interpretado como extinção, não corresponde fielmente à dinâmica de populações reais. A análise do modelo permite identificar pontos de equilíbrio, como $P^* = 0$ (instável) e $P^* = K$ (estável), além de revelar a possibilidade de comportamentos mais complexos, dependendo do valor da taxa de crescimento $r$. \
+
+Uma formulação contínua equivalente, também discutida por Allman & Rhodes (2004, Cap. 1, Seç. 1.5), é dada pela equação diferencial logística
+
+\begin{equation}
+\label{eq-logistica}
+\frac{dN}{dt} = r N \left(1 - \frac{N}{K}\right)
+\end{equation}
+
+\noindent cuja solução analítica
+
+\begin{equation}
+N(t) = \frac{K}{1 + A e^{-rt}}, \quad \text{com} \quad A = \frac{K - N_0}{N_0}
+\end{equation}
+
+\noindent é frequentemente utilizada para ajustar dados de séries históricas e estimar os parâmetros $K$ e $r$. Como apontado pelos autores, embora modelos contínuos como o da Equação \ref{eq-logistica} possuam soluções analíticas mais tratáveis, os modelos discretos são particularmente adequados para populações com ciclos de vida bem definidos e se beneficiam da experimentação numérica facilitada pelo uso de computadores. \
+
+A compreensão da dinâmica populacional também exige a análise dos componentes da taxa de crescimento, como as taxas de natalidade $f$ e mortalidade $d$, que determinam o crescimento líquido da população. Conforme apresentado por Allman & Rhodes (2004, Cap. 1, Seç. 1.1), a variação populacional em um intervalo de tempo pode ser expressa como $\Delta P = fP - dP = (f - d)P$, de modo que a taxa de crescimento intrínseca $r = f - d$ surge naturalmente da diferença entre estes dois componentes. Esta relação permite conectar os parâmetros do modelo Malthusiano às taxas vitais observáveis, possibilitando, por exemplo, estimar a taxa de natalidade necessária para sustentar um determinado crescimento populacional ou, inversamente, determinar o número médio de filhos por mulher que manteria a população estável — o chamado nível de substituição. Este último corresponde ao ponto de equilíbrio de crescimento zero ($r = 0$), condição em que as taxas de natalidade e mortalidade se igualam ($f = d$), constituindo um conceito fundamental em estudos demográficos e de planejamento populacional.
+
+O ajuste do modelo logístico a dados históricos, como os censos populacionais brasileiros, permite não apenas estimar os parâmetros $K$ e $r$, mas também avaliar se a dinâmica populacional observada segue um padrão de saturação ou se desvios significativos indicam mudanças estruturais no comportamento demográfico.
+
+Tendo em vista o exposto, neste relatório, aplicaremos estes modelos — Malthusiano e logístico — aos dados populacionais brasileiros, calculando parâmetros, discutindo suas limitações e interpretando os resultados à luz da teoria apresentada por Allman & Rhodes (2004).
+
+# Desenvolvimento
+
+## O Modelo Malthusiano
+
+Para avaliar o crescimento populacional brasileiro recente, aplicamos o modelo Malthusiano discreto aos dados do IBGE: em 2010 a população era de $P_{0} = \text{190.755.799}$ habitantes e em 2022 atingiu $P_{12} = \text{203.062.512}$ habitantes, considerando um intervalo de $t = 12$ anos. Assumindo o modelo $P(t) = \lambda^{t} P_{0}$, onde $\lambda = 1 + r$ é o fator de crescimento finito e $r$ a taxa anual intrínseca, obtemos $\lambda = (P_{12}/P_{0})^{1/12}$. A partir deste valor, calculamos a taxa anual $r$ e, para uma conversão mensal, utilizamos a relação $\lambda_{\text{mês}} = \lambda^{1/12}$, resultando na taxa mensal $r_{\text{mês}} = \lambda_{\text{mês}} - 1$.
+
+```{julia}
+#| label: fig-malthusiano
+#| fig-cap: 'Crescimento exponencial da população brasileira (2010-2022). [Código](#code-modelo-malthusiano)'
+# @title: Código 1: modelo Malthusiano
+# @label: modelo-malthusiano
+# @figlabel: malthusiano
+# @caption: Cálculo e visualização do modelo Malthusiano para os dados do IBGE (2010–2022).
+
+using Plots
+
+default(thickness_scaling=1.5, fontfamily="Computer Modern",
+        guidefontsize=6, tickfontsize=7, legendfontsize=5, legend=:topleft,
+        size=(800*0.55, 500*0.55), fmt = :svg)
+#
+P0 = 190755799    # população em 2010
+P12 = 203062512   # população em 2022
+P60 = 70070457    # população em 1960
+P70 = 93139037    # população em 1970
+t = 0:12          # anos desde 2010
+#
+L = (P12 / P0)^(1/12)       # fator anual
+r_anual = L - 1             # taxa anual
+L_mes = L^(1/12)            # fator mensal
+r_mes = L_mes - 1           # taxa mensal
+#
+La = (P70 / P60)^(1/12)       # fator anual antigo
+ra_anual = La - 1             # taxa anual antigo
+#
+# curva teórica
+P_teorica = P0 * L .^ t
+#
+plot(t, P_teorica, label="Modelo Malthusiano", linewidth=2,
+     xlabel="Anos desde 2010", ylabel="População",)
+scatter!([0,12], [P0, P12], label="Dados IBGE", color=:red)
+```
+
+Os resultados numéricos são:
+
+$$
+\lambda = \left(\frac{\text{203.062.512}}{\text{190.755.799}}\right)^{1/12} \approx `{julia} round(L, digits=5)`
+$$
+
+$$
+r_{\text{anual}} = \lambda - 1 \approx `{julia} round(r_anual*100, digits=2)`\%
+$$
+
+$$
+\lambda_{\text{mês}} = \lambda^{1/12} \approx `{julia} round(L_mes, digits=6)`
+$$
+
+$$
+r_{\text{mês}} = \lambda_{\text{mês}} - 1 \approx `{julia} round(r_mes*100, digits=4)`\%
+$$
+\
+
+A taxa anual de `{julia} round(r_anual*100, digits=2)`% é significativamente inferior às taxas observadas em décadas anteriores, como o período 1950–1960, quando o crescimento anual chegava a cerca de `{julia} round(ra_anual*100, digits=2)`%~@ibge2010~. Essa queda acentuada reflete a transição demográfica brasileira, com redução das taxas de fecundidade e mudanças na estrutura etária. O modelo Malthusiano, que pressupõe crescimento exponencial constante, não capta essa desaceleração e, portanto, não descreve adequadamente a dinâmica populacional atual do Brasil. Apesar de ajustar bem os dois pontos extremos, ele superestimaria o crescimento se extrapolado para além do período considerado, evidenciando a necessidade de modelos que incorporem a saturação populacional.
+
+## Dinâmica de Vitalidade e Fecundidade
+
+Conhecendo a taxa de crescimento anual obtida no período 2010–2022, $r_{\text{anual}} \approx `{julia} round(r_anual*100, digits=2)`\%$, e assumindo uma expectativa de vida média de 70 anos, que simplifica a taxa de mortalidade anual para $d = 1/70 \approx 0,014286$, podemos estimar a taxa de natalidade necessária para sustentar o crescimento observado. A partir da equação $f = r + d$, obtém-se o valor de $f$, que representa o número médio de nascimentos por indivíduo por ano. Para estimar o número médio de filhos por mulher ao longo da vida reprodutiva, consideramos a proporção de 1:1 entre homens e mulheres na população, de modo que a taxa de natalidade por mulher é o dobro da taxa populacional, e multiplicamos pelo período reprodutivo de $15-49+1 = 35$ anos, que é usado pelo IBGE~@ibge_fecundidade_2019~.
+
+```{julia}
+#| label: fig-vitalidade
+#| fig-cap: 'Relação entre taxa de natalidade e mortalidade no modelo Malthusiano. [Código](#code-vitalidade)'
+# @title: Código 2: dinâmica de vitalidade e fecundidade
+# @label: vitalidade
+# @figlabel: vitalidade
+# @caption: Cálculo da taxa de natalidade e estimativa de prole a partir da taxa de crescimento anual.
+
+using Plots
+default(thickness_scaling=1.5, fontfamily="Computer Modern",
+        guidefontsize=6, tickfontsize=6, legend=:topleft,
+        size=(800*0.55, 500*0.55))
+#
+# Taxa de crescimento anual do período 2010-2022
+d = 1/70                    # taxa de mortalidade anual
+f = r_anual + d             # taxa de natalidade anual
+#
+# Cada mulher contribui com o dobro da taxa populacional (proporção 1:1)
+filhos_por_mulher = 2 * f * 35     # 35 veio do IBGE
+#
+# Visualização da relação entre as taxas
+categorias = ["Natalidade (f)", "Mortalidade (d)", "Crescimento (r)"]
+valores = [f, d, r_anual]
+bar(categorias, valores, label="", ylabel="Taxa anual",
+color=[:green, :red, :blue])
+```
+
+Os resultados dos cálculos são:
+
+$$
+d = \frac{1}{70} \approx `{julia} round(d, digits=6)`
+$$
+
+$$
+f = r_{\text{anual}} + d \approx `{julia} round(f, digits=6)`
+$$
+\
+Para uma proporção de 1:1 entre homens e mulheres, a taxa de natalidade feminina é o dobro da taxa populacional, resultando em um número médio de filhos por mulher ao longo de 70 anos de:
+
+$$
+\text{Filhos por mulher} = 2 \cdot f \cdot 35 \approx `{julia} round(filhos_por_mulher, digits=2)`
+$$
+
+A taxa de natalidade estimada de `{julia} round(f*100, digits=4)`% ao ano é compatível com valores observados em populações em transição demográfica, onde a fecundidade ainda supera a mortalidade, mas já apresenta tendência de declínio. O número médio de filhos por mulher, calculado em aproximadamente `{julia} round(filhos_por_mulher, digits=2)` filhos, situa-se abaixo do nível de reposição populacional, que é de aproximadamente 2,1 filhos por mulher em sociedades com baixa mortalidade infantil. Este valor de 2,1 é necessário para compensar a mortalidade antes da idade reprodutiva e garantir que cada mulher seja substituída por exatamente uma filha ao longo da vida. Este fato indica que, se mantidas as condições de fecundidade e mortalidade observadas no período, a população brasileira tenderia a um crescimento negativo no longo prazo. No entanto, o crescimento ainda positivo observado entre 2010 e 2022 reflete a inércia populacional: o grande contingente de jovens adultos, resultante de taxas de fecundidade mais elevadas em décadas passadas, ainda mantém o número de nascimentos superior ao de óbitos, mesmo com a fecundidade atual já abaixo do nível de reposição.
+
+## Ponto de Equilíbrio (Crescimento Zero)
+
+O conceito de nível de substituição corresponde à condição em que a população se mantém constante ao longo do tempo, ou seja, $r = 0$. Da relação fundamental $r = f - d$, isso implica que a taxa de natalidade $f$ deve igualar a taxa de mortalidade $d$. Mantendo a mesma expectativa de vida de 70 anos, que fixa $d = 1/70$, a taxa de natalidade de equilíbrio é $f_{\text{eq}} = d$. Para obter o número médio de filhos por mulher que garante essa estabilidade, utilizamos novamente a proporção de 1:1 entre os sexos e o período reprodutivo de 35 anos, resultando em:
+
+$$
+\text{Filhos por mulher}_{\text{eq}} = 2 \cdot f_{\text{eq}} \cdot 35
+$$
+
+O gráfico a seguir compara as taxas de natalidade e mortalidade no cenário atual (com $r > 0$) e no cenário hipotético de equilíbrio ($r = 0$).
+
+```{julia}
+#| label: fig-equilibrio
+#| fig-cap: 'Comparação entre as taxas de natalidade e mortalidade no cenário atual e no cenário de equilíbrio. [Código](#code-equilibrio)'
+# @title: Código 3: nível de substituição
+# @label: equilibrio
+# @figlabel: equilibrio
+# @caption: Cálculo do número médio de filhos por mulher necessário para manter a população constante.
+
+using Plots
+default(thickness_scaling=1.5, fontfamily="Computer Modern",
+        guidefontsize=6, tickfontsize=6, legend=:topleft,
+        size=(800*0.55, 500*0.55))
+#
+# Número de filhos por mulher correspondente
+filhos_eq = 2 * d * 35
+#
+# Gráfico de barras comparativo
+categorias = ["Natalidade\n(atual)", "Natalidade\n(equilíbrio)",
+"Mortalidade"]
+valores = [f, d, d]
+bar(categorias, valores, label="", ylabel="Taxa anual",  
+color=[:green, :lightgreen, :red])
+```
+
+Os valores calculados são:
+
+$$
+f_{\text{eq}} = d = \frac{1}{70} \approx `{julia} round(d, digits=6)`
+$$
+
+$$
+\text{Filhos por mulher}_{\text{eq}} = 2 \cdot f_{\text{eq}} \cdot 35 \approx `{julia} round(filhos_eq, digits=2)`
+$$
+
+Para manter a população brasileira constante sob as premissas adotadas (expectativa de vida de 70 anos e ausência de mortalidade antes da idade reprodutiva), seria necessário que cada mulher tivesse, em média, `{julia} round(filhos_eq, digits=2)` filhos ao longo da vida reprodutiva. Esse valor é menor que o número médio de filhos observado no período 2010–2022 (1,37 filhos), indicando que a fecundidade atual ainda supera o nível necessário para a estabilidade, o que explica o crescimento populacional positivo, embora em ritmo desacelerado.
+
+No entanto, é importante destacar que o valor de equilíbrio obtido (1,0 filho) é uma estimativa teórica baseada em simplificações para o período em questão. Na realidade, o nível de reposição populacional efetivo mínimo é de aproximadamente 2,1 filhos por mulher (deve ser > 2,0), pois esse valor compensa a mortalidade infantil e a mortalidade antes da idade reprodutiva, além de garantir a substituição das gerações. O fato de a fecundidade observada (1,37 filhos) estar abaixo desse patamar real indica que, se mantidas as condições atuais, a população brasileira tenderá ao declínio no longo prazo, uma vez que a inércia populacional — resultante da estrutura etária jovem herdada de décadas passadas — ainda sustenta o crescimento por algum tempo, mas não indefinidamente.
+
+## O ajuste Logístico (Verhulst)
+
+Para testar a hipótese de saturação populacional, utilizamos a série histórica de censos brasileiros entre 1872 e 2010, disponibilizada pelo IBGE~@ibge_sidra_1286~, com o dado de 2022, também do IBGE, citado no e-disciplinas~@usp_modelagem_2026~. Ajustamos a função logística contínua
+
+\begin{equation}
+P(t) = \frac{K}{1 + C e^{-r (t - t_0)}}
+\end{equation}
+
+\noindent onde $K$ é a capacidade de carga (assíntota superior), $r$ é a taxa de crescimento intrínseca, $t_0$ é um ano de referência (aqui adotamos 1872) e $C$ é uma constante relacionada à população inicial. Os parâmetros $K$ e $r$ foram estimados pelo método dos mínimos quadrados não lineares, utilizando a biblioteca `LsqFit` do Julia.
+
+Os dados e o ajuste são apresentados no gráfico a seguir, juntamente com os valores estimados.
+
+```{julia}
+#| label: fig-logistico
+#| fig-cap: 'Ajuste do modelo logístico à série histórica da população brasileira (1872–2022). [Código](#code-logistico)'
+# @title: Código 4: ajuste logístico
+# @label: logistico
+# @figlabel: logistico
+# @caption: Estimação da capacidade de carga e taxa de crescimento intrínseca.
+
+using Plots, LsqFit
+default(thickness_scaling=1.5, fontfamily="Computer Modern",
+        guidefontsize=6, tickfontsize=7, legend=:topleft,
+        size=(800*0.55, 500*0.55))
+#
+# Dados censitários (ano, população em milhões) – IBGE
+anos = [1872, 1890, 1900, 1920, 1940, 1950,
+1960, 1970, 1980, 1991, 2000, 2010, 2022]
+#
+pop = [9.93, 14.33, 17.44, 30.64, 41.24, 51.94,
+70.99, 94.51, 121.15, 146.92, 169.59, 190.76, 203.06]
+#
+t0 = 1872.0
+t = anos .- t0
+#
+# Função para ajuste: parâmetros = [K, r, C]
+modelo(t, p) = p[1] ./ (1 .+ p[3] .* exp.(-p[2] .* t))
+#
+# Chute inicial para [K, r, C]
+p0 = [250.0, 0.03, (250.0 - pop[1]) / pop[1]]
+#
+# Ajuste
+fit = curve_fit(modelo, t, pop, p0)
+param = fit.param
+K_est, r_est, C_est = param
+#
+# Valores previstos
+t_plot = range(0, t[end], length=200)
+pop_prev = modelo(t_plot, param)
+#
+# Gráfico
+scatter(anos, pop, label="Dados censitários", color=:red, marker=:circle,
+        xlabel="Ano", ylabel="População (milhões)")
+plot!(t_plot .+ t0, pop_prev, label="Modelo logístico",
+linewidth=2, color=:blue)
+```
+
+Os parâmetros estimados foram:
+
+$$
+K \approx `{julia} round(K_est, digits=1)` \text{ milhões de habitantes}
+$$
+
+$$
+r \approx `{julia} round(r_est, digits=4)`
+$$
+
+O modelo logístico descreve razoavelmente a tendência geral dos dados, especialmente a desaceleração observada a partir da década de 1970. No entanto, nota‑se um desvio sistemático nos últimos censos: a curva projetada para 2022 indica uma população de aproximadamente `{julia} round(modelo(t[end], param), digits=1)` milhões, enquanto o valor real foi de 203,1 milhões. O erro relativo é de cerca de `{julia} round((pop[end] - modelo(t[end], param))/pop[end]*100, digits=1)`%.
+
+Esse desvio sugere que a transição demográfica brasileira ocorreu mais rapidamente do que a trajetória logística simples previa. Fatores como a queda acelerada da fecundidade nas últimas décadas e a antecipação da estabilização populacional não são totalmente capturados por um único modelo logístico com parâmetros constantes. Além disso, a capacidade de carga estimada ($K \approx `{julia} round(K_est, digits=1)`$ milhões) ainda não foi alcançada, mas as projeções recentes do IBGE apontam para um crescimento muito lento a partir de 2040, o que indica que a população pode se estabilizar em um patamar próximo ou até inferior ao estimado.
+
+Em suma, embora o modelo logístico capture a tendência de saturação, os desvios nos últimos censos revelam a necessidade de modelos mais flexíveis para descrever adequadamente a transição demográfica brasileira, marcada por mudanças estruturais no comportamento da fecundidade e na estrutura etária.
+
+{{< pagebreak >}}
+
+# Conclusão {.unnumbered}
+
+A análise da dinâmica populacional brasileira por meio dos modelos Malthusiano e logístico permitiu evidenciar tanto as limitações do modelo exponencial simples quanto a adequação parcial do modelo de saturação para descrever a transição demográfica em curso. No período recente (2010–2022), a taxa de crescimento anual foi de apenas `{julia} round(r_anual*100, digits=2)`%, valor significativamente inferior aos `{julia} round(ra_anual*100, digits=2)`% observados entre 1960 e 1970, confirmando a acentuada desaceleração do crescimento populacional brasileiro.
+
+A análise das taxas vitais revelou que, para sustentar o crescimento observado, seria necessária uma taxa de natalidade de `{julia} round(f*100, digits=4)`% ao ano, resultando em `{julia} round(filhos_por_mulher, digits=2)` filhos por mulher ao longo da vida reprodutiva. Este valor situa-se abaixo do nível de reposição real de 2,1 filhos por mulher, indicando que, se mantidas as condições atuais, a população brasileira tenderia ao declínio no longo prazo. O crescimento ainda positivo observado no período deve-se à inércia populacional — o grande contingente de jovens adultos herdado de décadas passadas ainda mantém o número de nascimentos superior ao de óbitos.
+
+No cenário hipotético de crescimento zero ($r = 0$), o número necessário de filhos por mulher seria de apenas `{julia} round(filhos_eq, digits=2)` filho, valor que contrasta com o nível real de 2,1 filhos por mulher, evidenciando que as simplificações adotadas (expectativa de vida de 70 anos e ausência de mortalidade pré‑reprodutiva) subestimam significativamente o nível de substituição real.
+
+O ajuste logístico à série histórica (1872–2022) estimou uma capacidade de carga de aproximadamente `{julia} round(K_est, digits=1)` milhões de habitantes e uma taxa de crescimento intrínseca de `{julia} round(r_est, digits=4)`. Embora o modelo capture a tendência de saturação, observou-se um desvio sistemático nos últimos censos, com a população real de 203,1 milhões em 2022 situando-se cerca de `{julia} round((pop[end] - modelo(t[end], param))/pop[end]*100, digits=1)`% abaixo do valor projetado pelo modelo logístico. Esse desvio sugere que a transição demográfica brasileira ocorreu mais rapidamente do que a trajetória logística simples previa, com a queda da fecundidade antecipando a estabilização populacional.
+
+Em síntese, os resultados demonstram que, embora modelos simples como o Malthusiano e o logístico sejam úteis para compreender os mecanismos fundamentais do crescimento populacional, a descrição precisa da dinâmica brasileira contemporânea exige modelos mais flexíveis, capazes de incorporar mudanças estruturais nas taxas de fecundidade e na estrutura etária, bem como os efeitos da inércia populacional.
+
+{{< pagebreak >}}
+
+# Referências {.unnumbered}
+
+::: {#refs}
+:::
+
+{{< pagebreak >}}
+
+
