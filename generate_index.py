@@ -56,22 +56,14 @@ def generate():
     """
     links = []
     for root, dirs, files in os.walk("."):
-        if ".git" in root or root == ".":
-            continue
+        if ".git" in root or root == ".": continue
         for file in files:
             if file.lower().endswith(".html") and file != "index.html":
                 path = os.path.join(root, file).replace("./", "")
                 safe_path = urllib.parse.quote(path)
-                
-                raw_name = os.path.splitext(os.path.basename(path))[0].replace("_", " ").title()
+                name = os.path.splitext(os.path.basename(path))[0].replace("_", " ").title()
                 folder = os.path.basename(os.path.dirname(path))
-                # Exibe pasta/arquivo quando houver subpasta
-                display_name = f"{folder}/{raw_name}" if folder else raw_name
-                
-                links.append(
-                    f'<li><span class="folder-tag">{folder if folder else "Raiz"}</span>'
-                    f'<a href="{safe_path}">{display_name}</a></li>'
-                )
+                links.append(f'<li><span class="folder-tag">{folder if folder else "Raiz"}</span><a href="{safe_path}">{name}</a></li>')
     
     content = html_template.replace("{links}", "\n".join(sorted(links)))
     with open("index.html", "w", encoding="utf-8") as f:

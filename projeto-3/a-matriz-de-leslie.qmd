@@ -1,0 +1,355 @@
+---
+extensoes: cl-roberts (modificada)
+gerais: ifsc.jpg, bib.bib, abnt-num.csl
+lang: pt
+bibliography: bib.bib
+csl: abnt-num.csl
+link-citations: true
+filters:
+  - code-appendix
+crossref:
+  fig-title: Figura
+  tbl-title: Tabela
+  fig-prefix: Fig.
+  eq-prefix: Eq.
+code-appendix-title: 'Apêndice: Códigos Fontes'
+nocite: |
+  @*
+code-appendix-header-level: 1
+format:
+  html:
+    toc: false
+    code-fold: true
+    format-links: false
+    code-overflow: wrap
+  pdf:
+    toc: false
+    code-overflow: wrap
+    number-sections: true
+    keep-tex: false
+    echo: true
+    pdf-engine-opts:
+      - "-shell-escape"
+    papersize: "4"
+    fig-dpi: 300
+    classoption: [12pt, a4paper]
+    geometry:
+      - a4paper
+      - top=3cm
+      - left=3cm
+      - right=2cm
+      - bottom=2cm
+    fig-format: pdf
+    pdf-engine: lualatex
+    include-in-header:
+      text: |
+        \usepackage{fvextra}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines=true, breakanywhere=true, commandchars=\\\{\}}
+        \usepackage{newunicodechar}
+        \newunicodechar{↩}{\ensuremath{\hookleftarrow}}
+        \newunicodechar{︎}{}
+        \usepackage[utf8]{inputenc}
+        \usepackage{indentfirst}
+        \usepackage{fancyhdr}
+        \pagestyle{fancy}
+        \fancyhf{} 
+        \fancyhead[R]{\thepage}
+        \renewcommand{\headrulewidth}{0pt}
+        \fancypagestyle{plain}{
+          \fancyhf{}
+          \fancyhead[R]{\thepage}
+          \renewcommand{\headrulewidth}{0pt}
+        }
+        \renewcommand{\sectionmark}[1]{}
+        \renewcommand{\subsectionmark}[1]{}
+        \AtBeginDocument{\renewcommand{\maketitle}{}}
+        \setlength{\parindent}{1.2em}
+        \setlength{\parskip}{0pt}
+engine: jupyter
+comp_nativa: false
+modo_escrita: false
+usar_gerais: true
+usar_exts: true
+usar_prog: true
+---
+
+```{julia}
+# @title: Configuração global do pdf
+# @label: setup
+
+using CairoMakie, LinearAlgebra, Logging
+
+set_theme!(Theme(fontsize = 20,
+                 titlesize = 20,
+                 xlabelsize = 18,
+                 ylabelsize = 18,
+                 ticklabelsize = 16))
+
+nothing
+```
+
+\begin{titlepage}
+    \begin{center}
+        \includegraphics[height=2.6cm]{ifsc.jpg}\hspace{0.3cm} \\
+        \large \textbf{INSTITUTO DE FÍSICA DE SÃO CARLOS} \\
+        \large \textbf{UNIVERSIDADE DE SÃO PAULO} \\
+
+        \vfill 
+
+        \large \textbf{INTRODUÇÃO À MODELAGEM MATEMÁTICA EM BIOLOGIA} \\
+        \vspace{0.5cm}
+        {\Large A matriz de Leslie — projeto 3} \\
+
+        \vfill 
+    \end{center}
+
+    \begin{flushright}
+        \large
+        Nome: Joenyr P. C. Domingues \\
+        NUSP: 15464382 \\
+    \end{flushright}
+
+    \vspace{4cm}
+
+    \begin{center}
+        \large São Carlos \\
+        \large 12/04/2026
+    \end{center}
+\end{titlepage}
+
+\newpage
+\tableofcontents 
+\newpage
+
+# Introdução {.unnumbered}
+
+A modelagem de populações estruturadas por idade é uma ferramenta central em demografia e ecologia, permitindo projetar a evolução temporal de uma população a partir de taxas de fertilidade e mortalidade específicas por idade. As matrizes de Leslie, introduzidas por Patrick Leslie na década de 1940, constituem um modelo linear de diferenças que descreve a dinâmica de uma população feminina dividida em classes etárias. Sob a hipótese de que as taxas vitais permanecem constantes, a matriz de Leslie fornece o autovalor dominante, que representa a taxa finita de crescimento da população, e o autovetor dominante normalizado, que dá a distribuição etária estável para a qual a população converge a longo prazo, independentemente da condição inicial (Allman e Rhodes, 2004, Capítulo 2). Neste projeto, constrói-se e analisa-se a matriz de Leslie para a população feminina de um país hipotético (“País X”), utilizando dados demográficos realistas de 11 classes etárias de 5 anos, compreendendo idades de 0 a 54 anos. O objetivo é determinar se a população está crescendo, diminuindo ou estável, calcular a distribuição etária estável e verificar numericamente a conjectura de Leslie, que garante a existência de um único autovalor real positivo dominante para matrizes biologicamente plausíveis.
+
+# Desenvolvimento
+
+## Construção da Matriz de Leslie
+
+A matriz de Leslie $\mathbf{L}$ é uma matriz quadrada de ordem $11$, onde a primeira linha contém as taxas de fertilidade $f_i$ (número médio de filhas nascidas vivas por mulher na classe $i$ durante um intervalo de 5 anos) e a subdiagonal contém as probabilidades de sobrevivência $s_i$ (probabilidade de uma mulher na classe $i$ passar para a classe $i+1$ após 5 anos). As demais entradas são nulas. Para os dados fornecidos, construiu-se a matriz $\mathbf{L}$ explicitamente.
+
+```{julia}
+#| label: tbl-matriz-leslie
+#| tbl-cap: 'Matriz de Leslie $\mathbf{L}$ completa (11 $\times$ 11).'
+# @title: Código 1: Construção da matriz de Leslie
+# @label: constroi_matriz
+
+using LinearAlgebra, Markdown
+
+# Dados
+fertilidade = [0.0000, 0.0005, 0.0121, 0.1534, 0.3891, 0.4502,
+               0.3121, 0.1895, 0.0562, 0.0051, 0.0000]
+sobrevivencia = [0.9912, 0.9989, 0.9985, 0.9972, 0.9961, 0.9950,
+                 0.9935, 0.9910, 0.9871, 0.9812, 0.9725]
+n = length(fertilidade)
+
+# Constroi matriz
+L = zeros(n, n)
+L[1, :] = fertilidade[:]
+for i in 1:n-1
+    L[i+1, i] = sobrevivencia[i]
+end
+
+# Gera tabela Markdown com a matriz completa (11x11)
+# Arredonda para 4 casas decimais
+L_rounded = round.(L, digits=4)
+
+# Cabeçalho: Classe 1 a Classe 11
+cabecalho = "| " * join(["Classe $i" for i in 1:n], " | ") * " |"
+linha_separadora = "|" * join(["---" for _ in 1:n], "|") * "|"
+
+linhas = [cabecalho, linha_separadora]
+for i in 1:n
+    linha = "| " * join([string(L_rounded[i, j]) for j in 1:n], " | ") * " |"
+    push!(linhas, linha)
+end
+
+tabela_md = join(linhas, "\n")
+display(MIME("text/markdown"), tabela_md)
+```
+
+## Análise do Crescimento a Longo Prazo
+
+Calculam-se todos os autovalores da matriz $\mathbf{L}$. O autovalor dominante $\lambda_1$ é aquele com o maior módulo e, para matrizes de Leslie biologicamente plausíveis, é real e positivo. Ele representa a taxa finita de crescimento da população a cada 5 anos: se $\lambda_1 > 1$, a população cresce; se $\lambda_1 = 1$, permanece estável; se $\lambda_1 < 1$, declina.
+
+```{julia}
+#| label: tbl-autovalores
+#| tbl-cap: 'Todos os autovalores da matriz de Leslie (ordenados por módulo decrescente).'
+# @title: Código 2: Cálculo dos autovalores
+# @label: autovalores
+
+using LinearAlgebra, Markdown
+
+# Dados (redundante, para código autocontido)
+fertilidade = [0.0000, 0.0005, 0.0121, 0.1534, 0.3891, 0.4502,
+               0.3121, 0.1895, 0.0562, 0.0051, 0.0000]
+sobrevivencia = [0.9912, 0.9989, 0.9985, 0.9972, 0.9961, 0.9950,
+                 0.9935, 0.9910, 0.9871, 0.9812, 0.9725]
+n = length(fertilidade)
+
+L = zeros(n, n)
+L[1, :] = fertilidade[:]
+for i in 1:n-1
+    L[i+1, i] = sobrevivencia[i]
+end
+
+# Autovalores
+vals = eigen(L).values
+idx = sortperm(abs.(vals), rev=true)
+vals_sorted = vals[idx]
+
+# Tabela Markdown com todos os 11 autovalores
+linhas = []
+push!(linhas, "| Índice | Parte Real | Parte Imag. | Módulo |")
+push!(linhas, "|--------|------------|-------------|--------|")
+for i in 1:n
+    v = vals_sorted[i]
+    linha = "| $i | $(round(real(v), digits=4)) | $(round(imag(v), digits=4)) | $(round(abs(v), digits=4)) |"
+    push!(linhas, linha)
+end
+tabela_md = join(linhas, "\n")
+display(MIME("text/markdown"), tabela_md)
+```
+
+O autovalor dominante é $\lambda_1 = `{julia} round(real(vals_sorted[1]), digits=4)`$ (real positivo). Como $\lambda_1 > 1$, a população feminina do País X está em crescimento. A taxa de crescimento por período de 5 anos é de $(\lambda_1 - 1) \times 100\% = `{julia} round((real(vals_sorted[1]) - 1)*100, digits=2)`\%$.
+
+## A Distribuição Etária Estável
+
+O autovetor dominante $\mathbf{v}_1$ associado a $\lambda_1$ fornece a estrutura etária relativa. Normalizando-o, obtém-se a distribuição percentual estável $\mathbf{u}_1 = \mathbf{v}_1 / \sum(\mathbf{v}_1)$. A @tbl-distribuicao apresenta esses valores, e a @fig-distribuicao mostra o gráfico de barras.
+
+```{julia}
+#| label: tbl-distribuicao
+#| tbl-cap: 'Distribuição etária estável (porcentagem da população feminina em cada classe de idade).'
+# @title: Código 3: Autovetor dominante e normalização
+# @label: autovetor
+
+using LinearAlgebra, Markdown
+
+# Dados (redundante para auto-continuidade)
+fertilidade = [0.0000, 0.0005, 0.0121, 0.1534, 0.3891, 0.4502,
+               0.3121, 0.1895, 0.0562, 0.0051, 0.0000]
+sobrevivencia = [0.9912, 0.9989, 0.9985, 0.9972, 0.9961, 0.9950,
+                 0.9935, 0.9910, 0.9871, 0.9812, 0.9725]
+n = length(fertilidade)
+
+# Constrói matriz
+L = zeros(n, n)
+L[1, :] = fertilidade[:]
+for i in 1:n-1
+    L[i+1, i] = sobrevivencia[i]
+end
+
+# Autovalores e autovetores
+vals = eigen(L).values
+idx = sortperm(abs.(vals), rev=true)
+vecs = eigen(L).vectors
+v1 = vecs[:, idx[1]]
+u1 = v1 / sum(v1)
+porcentagem = real.(100 * u1)   # extrai apenas a parte real
+
+classes = ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29",
+           "30-34", "35-39", "40-44", "45-49", "50-54"]
+
+linhas = []
+push!(linhas, "| Classe etária | % estável |")
+push!(linhas, "|---------------|-----------|")
+for i in 1:n
+    linha = "| $(classes[i]) | $(round(porcentagem[i], digits=2))% |"
+    push!(linhas, linha)
+end
+tabela_md = join(linhas, "\n")
+display(MIME("text/markdown"), tabela_md)
+```
+
+```{julia}
+#| label: fig-distribuicao
+#| fig-cap: 'Distribuição etária estável da população feminina do País X.'
+# @title: Código 4: Gráfico da distribuição etária estável
+# @label: grafico_dist
+
+using CairoMakie, LinearAlgebra, Logging
+
+# Dados (redundante)
+fertilidade = [0.0000, 0.0005, 0.0121, 0.1534, 0.3891, 0.4502,
+               0.3121, 0.1895, 0.0562, 0.0051, 0.0000]
+sobrevivencia = [0.9912, 0.9989, 0.9985, 0.9972, 0.9961, 0.9950,
+                 0.9935, 0.9910, 0.9871, 0.9812, 0.9725]
+n = length(fertilidade)
+
+L = zeros(n, n)
+L[1, :] = fertilidade[:]
+for i in 1:n-1
+    L[i+1, i] = sobrevivencia[i]
+end
+
+vals = eigen(L).values
+idx = sortperm(abs.(vals), rev=true)
+vecs = eigen(L).vectors
+v1 = vecs[:, idx[1]]
+u1 = v1 / sum(v1)
+porcentagem = real.(100 * u1)   # garantir real
+
+classes = ["0-4", "5-9", "10-14", "15-19", "20-24", "25-29",
+           "30-34", "35-39", "40-44", "45-49", "50-54"]
+
+with_logger(Logging.SimpleLogger(stderr, Logging.Error)) do
+    fig = Figure(resolution=(800, 500))
+    ax = Axis(fig[1,1], xlabel = "Classe etária (anos)", 
+              ylabel = "Porcentagem da população",
+              title = "Distribuição etária estável",
+              xticks = (1:11, classes),
+              xticklabelrotation = π/4)
+    barplot!(ax, 1:11, porcentagem, color = :steelblue)
+    fig
+end
+```
+
+A distribuição etária estável é fortemente inclinada para as idades mais jovens: a classe 0-4 anos concentra aproximadamente `{julia} round(porcentagem[1], digits=2)`% da população, e as proporções diminuem gradualmente com a idade. Isso é típico de populações em crescimento.
+
+## Verificação Numérica da Conjectura de Leslie
+
+A conjectura de Leslie afirma que, para uma matriz de Leslie irredutível e aperiódica, existe um único autovalor real positivo que é estritamente maior em módulo do que todos os outros. Analisando os autovalores obtidos, observa-se que o autovalor dominante é $\lambda_1 = `{julia} round(real(vals_sorted[1]), digits=4)`$, com parte imaginária nula, sendo portanto real e positivo. Além disso, os demais autovalores são todos inferiores a 1, confirmando que $|\lambda_1|$ é estritamente maior que $|\lambda_j|$ para $j>1$. Portanto, a conjectura de Leslie é validada numericamente para esta matriz. Biologicamente, essa propriedade garante que, a partir de qualquer distribuição etária inicial não negativa e não nula, a população converge para a estrutura estável dada pelo autovetor dominante, com taxa de crescimento determinada por $\lambda_1$, independentemente das condições iniciais.
+
+```{julia}
+#| label: verifica-conjectura
+# @title: Código 5: Verificação da conjectura de Leslie (suporte)
+# @label: conjectura
+# echo: false
+
+using LinearAlgebra
+
+fertilidade = [0.0000, 0.0005, 0.0121, 0.1534, 0.3891, 0.4502,
+               0.3121, 0.1895, 0.0562, 0.0051, 0.0000]
+sobrevivencia = [0.9912, 0.9989, 0.9985, 0.9972, 0.9961, 0.9950,
+                 0.9935, 0.9910, 0.9871, 0.9812, 0.9725]
+n = length(fertilidade)
+
+L = zeros(n, n)
+L[1, :] = fertilidade[:]
+for i in 1:n-1
+    L[i+1, i] = sobrevivencia[i]
+end
+
+vals = eigen(L).values
+idx = sortperm(abs.(vals), rev=true)
+vals_sorted = vals[idx]
+
+# as variáveis vals_sorted, etc. ficam disponíveis para o texto inline
+nothing
+```
+
+# Conclusão {.unnumbered}
+
+O estudo da matriz de Leslie para a população feminina do País X permitiu quantificar sua dinâmica futura sob a hipótese de constância das taxas de fertilidade e mortalidade. O autovalor dominante $\lambda_1 = `{julia} round(real(vals_sorted[1]), digits=4)`$ indica que a população está crescendo a uma taxa de aproximadamente `{julia} round((real(vals_sorted[1]) - 1)*100, digits=2)`% a cada cinco anos (crescimento anual médio de cerca de `{julia} round(real(vals_sorted[1])^(1/5) - 1, digits=4)*100`%). A distribuição etária estável mostra uma população jovem, com `{julia} round(porcentagem[1], digits=2)`% das mulheres na faixa de 0-4 anos, típica de países em transição demográfica. A verificação numérica da conjectura de Leslie confirmou que $\lambda_1$ é o único autovalor real positivo e de maior módulo, garantindo a convergência para a estrutura estável independentemente da condição inicial.
+
+{{< pagebreak >}}
+
+# Referências {.unnumbered}
+
+::: {#refs}
+:::
+
+{{< pagebreak >}}

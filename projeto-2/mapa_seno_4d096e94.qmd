@@ -1,4 +1,4 @@
----
+--
 extensoes: cl-roberts (modificada)
 gerais: ifsc.jpg, bib.bib, abnt-num.csl
 lang: pt
@@ -28,9 +28,9 @@ format:
     number-sections: true
     keep-tex: false
     echo: true
-    pdf-engine-opts: 
+    pdf-engine-opts:
       - "-shell-escape"
-    papersize: a4
+    papersize: "4"
     fig-dpi: 300
     classoption: [12pt, a4paper]
     geometry:
@@ -79,14 +79,14 @@ usar_prog: true
         \includegraphics[height=2.6cm]{ifsc.jpg}\hspace{0.3cm} \\
         \large \textbf{INSTITUTO DE FÍSICA DE SÃO CARLOS} \\
         \large \textbf{UNIVERSIDADE DE SÃO PAULO} \\
-        
+
         \vfill 
-        
+
         % Bloco Central: Título
         \large \textbf{INTRODUÇÃO À MODELAGEM MATEMÁTICA EM BIOLOGIA} \\
         \vspace{0.5cm}
         {\Large O mapa seno — projeto 2} \\
-        
+
         \vfill 
     \end{center}
 
@@ -150,12 +150,13 @@ set_theme!(Theme(fontsize = 20,
 # define o mapa seno e sua derivada
 f(A, x) = A * sin(π * x)
 df(A, x) = A * π * cos(π * x)
+
 alpha = 0.13 # opacidade do diagrama
 pointsize = 1.5 # tamanho dos pontos
 
 nothing
 ```
-\
+
 
 # Desenvolvimento
 
