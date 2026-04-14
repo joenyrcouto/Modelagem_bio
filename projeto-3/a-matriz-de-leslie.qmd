@@ -71,6 +71,13 @@ modo_escrita: false
 usar_gerais: true
 usar_exts: true
 usar_prog: true
+quarto_id: 48029821
+quarto_modo_escrita: false
+quarto_comp_nativa: true
+quarto_extensoes: [cl-roberts (modificada)]
+quarto_gerais: [bib.bib, abnt-num.csl, ifsc.jpg]
+quarto_ignorar_ativos: true
+quarto_usar_local_fisico: true
 ---
 
 ```{julia}
@@ -113,7 +120,7 @@ nothing
 
     \begin{center}
         \large São Carlos \\
-        \large 12/04/2026
+        \large 13/04/2026
     \end{center}
 \end{titlepage}
 
@@ -123,7 +130,7 @@ nothing
 
 # Introdução {.unnumbered}
 
-A modelagem de populações estruturadas por idade é uma ferramenta central em demografia e ecologia, permitindo projetar a evolução temporal de uma população a partir de taxas de fertilidade e mortalidade específicas por idade. As matrizes de Leslie, introduzidas por Patrick Leslie na década de 1940, constituem um modelo linear de diferenças que descreve a dinâmica de uma população feminina dividida em classes etárias. Sob a hipótese de que as taxas vitais permanecem constantes, a matriz de Leslie fornece o autovalor dominante, que representa a taxa finita de crescimento da população, e o autovetor dominante normalizado, que dá a distribuição etária estável para a qual a população converge a longo prazo, independentemente da condição inicial (Allman e Rhodes, 2004, Capítulo 2). Neste projeto, constrói-se e analisa-se a matriz de Leslie para a população feminina de um país hipotético (“País X”), utilizando dados demográficos realistas de 11 classes etárias de 5 anos, compreendendo idades de 0 a 54 anos. O objetivo é determinar se a população está crescendo, diminuindo ou estável, calcular a distribuição etária estável e verificar numericamente a conjectura de Leslie, que garante a existência de um único autovalor real positivo dominante para matrizes biologicamente plausíveis.
+A modelagem de populações estruturadas por idade é uma ferramenta central em demografia e ecologia, permitindo projetar a evolução temporal de uma população a partir de taxas de fertilidade e mortalidade específicas por idade. As matrizes de Leslie, introduzidas por Patrick Leslie na década de 1940, constituem um modelo linear de diferenças que descreve a dinâmica de uma população feminina dividida em classes etárias. Sob a hipótese de que as taxas vitais permanecem constantes, a matriz de Leslie fornece o autovalor dominante, que representa a taxa finita de crescimento da população, e o autovetor dominante normalizado, que dá a distribuição etária estável para a qual a população converge a longo prazo, independentemente da condição inicial. Neste projeto, constrói-se e analisa-se a matriz de Leslie para a população feminina de um país hipotético (“País X”), utilizando dados demográficos realistas de 11 classes etárias de 5 anos, compreendendo idades de 0 a 54 anos. O objetivo é determinar se a população está crescendo, diminuindo ou estável, calcular a distribuição etária estável e verificar numericamente a conjectura de Leslie, que garante a existência de um único autovalor real positivo dominante para matrizes biologicamente plausíveis.
 
 # Desenvolvimento
 
@@ -315,7 +322,7 @@ A conjectura de Leslie afirma que, para uma matriz de Leslie irredutível e aper
 
 ```{julia}
 #| label: verifica-conjectura
-# @title: Código 5: Verificação da conjectura de Leslie (suporte)
+# @title: Código 5: Verificação da conjectura de Leslie
 # @label: conjectura
 # echo: false
 
@@ -337,9 +344,10 @@ vals = eigen(L).values
 idx = sortperm(abs.(vals), rev=true)
 vals_sorted = vals[idx]
 
-# as variáveis vals_sorted, etc. ficam disponíveis para o texto inline
 nothing
 ```
+
+{{< pagebreak >}}
 
 # Conclusão {.unnumbered}
 

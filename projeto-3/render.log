@@ -1,0 +1,67 @@
+=== Render Log === seg 13 abr 2026 23:38:07
+
+Starting julia-1.12 kernel...
+Done
+Executing 'a-matriz-de-leslie.quarto_ipynb'
+  Cell 1/6: ''......................
+Done
+  Cell 2/6: 'tbl-matriz-leslie'.....
+Done
+  Cell 3/6: 'tbl-autovalores'.......
+Done
+  Cell 4/6: 'tbl-distribuicao'......
+Done
+  Cell 5/6: 'fig-distribuicao'......
+Done
+  Cell 6/6: 'verifica-conjectura'...
+Done
+[1mpandoc [22m
+  to: html
+  output-file: a-matriz-de-leslie.html
+  standalone: true
+  section-divs: true
+  html-math-method: mathjax
+  wrap: none
+  default-image-extension: png
+  toc: false
+  variables: {}
+  
+[1mmetadata[22m
+  document-css: false
+  link-citations: true
+  date-format: long
+  lang: pt
+  engines:
+    - path: /opt/quarto/share/extension-subtrees/julia-engine/_extensions/julia-engine/julia-engine.js
+  extensoes: cl-roberts (modificada)
+  gerais: ifsc.jpg, bib.bib, abnt-num.csl
+  bibliography:
+    - bib.bib
+  csl: abnt-num.csl
+  crossref:
+    fig-title: Figura
+    tbl-title: Tabela
+    fig-prefix: Fig.
+    eq-prefix: Eq.
+  code-appendix-title: 'Apêndice: Códigos Fontes'
+  nocite: |
+    @*
+  code-appendix-header-level: 1
+  comp_nativa: false
+  modo_escrita: false
+  usar_gerais: true
+  usar_exts: true
+  usar_prog: true
+  quarto_id: 48029821
+  quarto_modo_escrita: false
+  quarto_comp_nativa: true
+  quarto_extensoes:
+    - cl-roberts (modificada)
+  quarto_gerais:
+    - bib.bib
+    - abnt-num.csl
+    - ifsc.jpg
+  quarto_ignorar_ativos: true
+  quarto_usar_local_fisico: true
+  
+Output created: a-matriz-de-leslie.html

@@ -1,0 +1,126 @@
+=== Preview Log === seg 13 abr 2026 23:22:20
+
+[stderr] 
+[stderr] Starting julia-1.12 kernel...
+[stderr] Done
+[stderr] 
+[stderr] 
+[stderr] Executing 'a-matriz-de-leslie.quarto_ipynb_1'
+[stderr] 
+[stderr]   Cell 1/6: ''......................
+[stderr] Done
+[stderr] 
+[stderr]   Cell 2/6: 'tbl-matriz-leslie'.....
+[stderr] Done
+[stderr] 
+[stderr]   Cell 3/6: 'tbl-autovalores'.......
+[stderr] Done
+[stderr] 
+[stderr]   Cell 4/6: 'tbl-distribuicao'......
+[stderr] Done
+[stderr] 
+[stderr]   Cell 5/6: 'fig-distribuicao'......
+[stderr] Done
+[stderr] 
+[stderr]   Cell 6/6: 'verifica-conjectura'...
+[stderr] Done
+[stderr] 
+[stderr] 
+[stderr] 
+[stderr] [1mpandoc [22m
+[stderr] 
+[stderr]   to: latex
+[stderr]   output-file: a-matriz-de-leslie.tex
+[stderr]   standalone: true
+[stderr]   pdf-engine: lualatex
+[stderr]   variables:
+[stderr]     graphics: true
+[stderr]     tables: true
+[stderr]   default-image-extension: pdf
+[stderr]   toc: false
+[stderr]   number-sections: true
+[stderr]   pdf-engine-opts:
+[stderr]     - '-shell-escape'
+[stderr]   
+[stderr] 
+[stderr] [1mmetadata[22m
+[stderr] 
+[stderr]   documentclass: scrartcl
+[stderr]   classoption:
+[stderr]     - DIV=11
+[stderr]     - numbers=noendperiod
+[stderr]     - 12pt
+[stderr]     - a4paper
+[stderr]   papersize: '4'
+[stderr]   header-includes:
+[stderr]     - \KOMAoption{captions}{tableheading}
+[stderr]   block-headings: true
+[stderr]   engines:
+[stderr]     - path: /opt/quarto/share/extension-subtrees/julia-engine/_extensions/julia-engine/julia-engine.js
+[stderr]   extensoes: cl-roberts (modificada)
+[stderr]   gerais: ifsc.jpg, bib.bib, abnt-num.csl
+[stderr]   lang: pt
+[stderr]   bibliography:
+[stderr]     - bib.bib
+[stderr]   csl: abnt-num.csl
+[stderr]   link-citations: true
+[stderr]   crossref:
+[stderr]     fig-title: Figura
+[stderr]     tbl-title: Tabela
+[stderr]     fig-prefix: Fig.
+[stderr]     eq-prefix: Eq.
+[stderr]   code-appendix-title: 'Apêndice: Códigos Fontes'
+[stderr]   nocite: |
+[stderr]     @*
+[stderr]   code-appendix-header-level: 1
+[stderr]   comp_nativa: false
+[stderr]   modo_escrita: false
+[stderr]   usar_gerais: true
+[stderr]   usar_exts: true
+[stderr]   usar_prog: true
+[stderr]   quarto_id: 48029821
+[stderr]   quarto_modo_escrita: false
+[stderr]   quarto_comp_nativa: true
+[stderr]   quarto_extensoes:
+[stderr]     - cl-roberts (modificada)
+[stderr]   quarto_gerais:
+[stderr]     - ifsc.jpg
+[stderr]     - abnt-num.csl
+[stderr]     - bib.bib
+[stderr]   quarto_ignorar_ativos: false
+[stderr]   quarto_usar_local_fisico: true
+[stderr]   geometry:
+[stderr]     - a4paper
+[stderr]     - top=3cm
+[stderr]     - left=3cm
+[stderr]     - right=2cm
+[stderr]     - bottom=2cm
+[stderr]   
+[stderr] 
+[stderr] [1m[34m
+[stderr] Rendering PDF[39m[22m
+[stderr] [1m[34mrunning lualatex - 1[39m[22m
+[stderr] 
+[stderr]   This is LuaHBTeX, Version 1.24.0 (TeX Live 2026) 
+[stderr]    system commands enabled.
+[stderr]   
+[stderr] 
+[stderr] [1m[34mrunning lualatex - 2[39m[22m
+[stderr] 
+[stderr]   This is LuaHBTeX, Version 1.24.0 (TeX Live 2026) 
+[stderr]    system commands enabled.
+[stderr]   
+[stderr] 
+[stderr] 
+[stderr] 
+[stderr] Output created: a-matriz-de-leslie.pdf
+[stderr] 
+[stderr] [32mWatching files for changes[39m
+[stderr] 
+[stderr] [32mBrowse at [39m
+[stderr] [4m[32mhttp://localhost:4445/web/viewer.html[39m[24m
+[stderr] 
+[stderr] Listening on http://127.0.0.1:4445/
+[stderr] 
+
+[stderr] 

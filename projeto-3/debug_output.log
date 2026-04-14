@@ -1,2 +1,0 @@
-Error: No identity is set.
-To interact with bugs, an identity first needs to be created using "git bug user new" or adopted with "git bug user adopt"
